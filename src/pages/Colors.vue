@@ -1,8 +1,9 @@
 <template>
   <q-page>
     <section class="q-pa-xl">
-      <div class="text-h4">Headings</div>
-      <div class="text-h1">한글 잘 나옴?</div>
+      <div class="text-h4">Colors</div>
+      <q-separator class="q-my-md" />
+      <div class="bg-primary">primary</div>
     </section>
   </q-page>
 </template>

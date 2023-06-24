@@ -13,13 +13,18 @@
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn flat round dense :icon="dartModeIcon" @click="toggleDarkMode" />
       </q-toolbar>
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
+        <q-item-label header>
+          <q-avatar size="lg" class="q-mr-sm">
+            <img src="https://cdn.quasar.dev/img/avatar.png" />
+          </q-avatar>
+          <span>Quasar v{{ $q.version }}</span>
+        </q-item-label>
 
         <EssentialLink
           v-for="link in essentialLinks"
@@ -43,16 +48,41 @@ const linksList = [
     icon: 'school',
     to: '/typography',
   },
+  {
+    title: 'Colors',
+    caption: 'quasar.dev',
+    icon: 'school',
+    to: '/colors',
+  },
 ];
 </script>
 
 <script setup>
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import EssentialLink from 'components/EssentialLink.vue';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
 
 const leftDrawerOpen = ref(false);
 const essentialLinks = linksList;
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+};
+
+const dartModeIcon = computed(() =>
+  $q.dark.isActive ? 'dark_mode' : 'light_mode',
+);
+
+// const init = () => {
+//   const darkMode = $q.localStorage.getItem('darkMode');
+//   $q.dark.set(darkMode);
+// };
+
+// init();
+
+const toggleDarkMode = () => {
+  $q.dark.toggle();
+  $q.localStorage.set('darkMode', $q.dark.isActive);
 };
 </script>
