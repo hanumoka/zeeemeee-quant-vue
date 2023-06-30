@@ -11,7 +11,7 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title> Sonjul Admin </q-toolbar-title>
 
         <q-btn flat round dense :icon="dartModeIcon" @click="toggleDarkMode" />
 
