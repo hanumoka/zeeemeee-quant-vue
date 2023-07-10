@@ -6,7 +6,7 @@ import {
   createWebHashHistory,
 } from 'vue-router';
 import routes from './routes';
-import { LoadingBar } from 'quasar';
+import { LoadingBar, LocalStorage } from 'quasar';
 
 /*
  * If not building with SSR mode, you can
@@ -34,8 +34,14 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  Router.beforeEach(() => {
-    LoadingBar.start(); // 로딩바 시작
+  Router.beforeEach((to, from, next) => {
+    const token = LocalStorage.getItem('accessToken');
+    if (!token && to.path !== '/auth/sign-in') {
+      next('/auth/sign-in');
+    } else {
+      LoadingBar.start(); // 로딩바 시작
+      next();
+    }
   });
   Router.afterEach(() => {
     LoadingBar.stop(); // 로딩바 종료
