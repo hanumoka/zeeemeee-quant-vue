@@ -32,6 +32,7 @@ module.exports = configure(function (/* ctx */) {
       'constants',
       'loading-plugin',
       'loading-bar-plugin',
+      'axios',
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
