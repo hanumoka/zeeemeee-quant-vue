@@ -105,7 +105,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['LocalStorage', 'Loading', 'LoadingBar'],
+      plugins: ['LocalStorage', 'Loading', 'LoadingBar', 'Notify'],
       config: {
         //전역 로딩 설정 -> boot 플러그인으로 이동
         // loading: {

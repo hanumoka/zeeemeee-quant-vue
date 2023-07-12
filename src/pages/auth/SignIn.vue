@@ -50,7 +50,7 @@
 
 <script setup>
 //TODO: form 벨리데이션
-import { ref, inject } from 'vue';
+import { ref } from 'vue';
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
@@ -89,12 +89,24 @@ const onSubmit = async () => {
       $q.localStorage.set('accessToken', accessToken);
       $q.localStorage.set('refreshToken', refreshToken);
       router.push('/');
+      $q.notify({
+        color: 'positive',
+        message: '로그인 성공',
+        position: 'top',
+        icon: 'check',
+      });
     } else {
       throw new Error('[로그인 실패] 토큰 없음');
     }
   } catch (error) {
-    alert('로그인 실패');
+    // alert('로그인 실패');
     console.error(error);
+    $q.notify({
+      color: 'negative',
+      message: '로그인 실패',
+      position: 'top',
+      icon: 'report_problem',
+    });
   } //catch
 };
 </script>
