@@ -35,21 +35,17 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach((to, from, next) => {
-    // LoadingBar.start(); // 로딩바 시작
     const token = LocalStorage.getItem('accessToken');
     LoadingBar.start(); // 로딩바 시작
     if (!token && to.path !== '/auth/sign-in') {
       if (to.path === '/auth/sign-up' || to.path === '/auth/sign-in') {
-        // LoadingBar.start(); // 로딩바 시작
         next();
       } else {
-        // LoadingBar.start(); // 로딩바 시작
         next('/auth/sign-in');
-      }
+      } // else
     } else {
-      // LoadingBar.start(); // 로딩바 시작
       next();
-    }
+    } // else
   });
   Router.afterEach(() => {
     LoadingBar.stop(); // 로딩바 종료

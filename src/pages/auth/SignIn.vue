@@ -52,6 +52,11 @@
 //TODO: form 벨리데이션
 import { ref, inject } from 'vue';
 import { api } from 'boot/axios';
+import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
+
+const $q = useQuasar();
+const router = useRouter();
 
 const form = ref({
   email: '',
@@ -68,13 +73,28 @@ const onSubmit = async () => {
   param.append('username', form.value.email);
   param.append('password', form.value.password);
 
-  //TODO: axios를 이용해서 로그인 요청, application/x-www-from-urlencoded 형식으로 요쳥을 보내야 한다.
-  const response = await api.post('/auth/sign-in', param, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  });
+  try {
+    //TODO: axios를 이용해서 로그인 요청, application/x-www-from-urlencoded 형식으로 요쳥을 보내야 한다.
+    const response = await api.post('/auth/sign-in', param, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
 
-  console.log(`response: ${JSON.stringify(response)}`);
+    console.log(JSON.stringify(response.data));
+
+    const { accessToken, refreshToken } = response?.data;
+
+    if (accessToken && refreshToken) {
+      $q.localStorage.set('accessToken', accessToken);
+      $q.localStorage.set('refreshToken', refreshToken);
+      router.push('/');
+    } else {
+      throw new Error('[로그인 실패] 토큰 없음');
+    }
+  } catch (error) {
+    alert('로그인 실패');
+    console.error(error);
+  } //catch
 };
 </script>
