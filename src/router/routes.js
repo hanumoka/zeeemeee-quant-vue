@@ -17,6 +17,18 @@ const routes = [
     ],
   },
 
+  // /finance-data-reader/krx-items
+  {
+    path: '/finance-data-reader',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: 'krx-stock-items',
+        component: () => import('pages/finance_data_reader/KrxStockItems.vue'),
+      },
+    ],
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {
