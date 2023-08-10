@@ -133,8 +133,8 @@ const linksList = [
     subLinks: [
       {
         title: 'KRX-Stock-Items',
-        caption: '종목',
-        icon: 'school',
+        caption: 'KRX 주식종목 수집기',
+        icon: 'email',
         to: '/finance-data-reader/krx-stock-items',
       },
     ],
