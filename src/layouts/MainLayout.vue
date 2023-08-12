@@ -16,6 +16,7 @@
         <q-btn flat round dense :icon="dartModeIcon" @click="toggleDarkMode" />
 
         <q-btn round size="sm" class="q-ml-md">
+          <!-- {{ signInUserInfo?.username }} -->
           <q-avatar>
             <img src="/logo.png" alt="" />
           </q-avatar>
@@ -48,61 +49,6 @@
           :key="link.title"
           v-bind="link"
         />
-
-        <!-- 아코디언 메뉴 예시 -->
-        <!-- <q-expansion-item
-          :content-inset-level="0.5"
-          expand-separator
-          icon="mail"
-          label="Inbox"
-          caption="5 unread emails"
-          default-opened
-        >
-          <q-expansion-item
-            expand-separator
-            :content-inset-level="0.5"
-            icon="receipt"
-            label="Receipts"
-          >
-            <q-expansion-item label="Today" :content-inset-level="0.5">
-              <q-card>
-                <q-card-section>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Quidem, eius reprehenderit eos corrupti commodi magni quaerat
-                  ex numquam, dolorum officiis modi facere maiores architecto
-                  suscipit iste eveniet doloribus ullam aliquid.
-                </q-card-section>
-              </q-card>
-            </q-expansion-item>
-
-            <q-expansion-item label="Yesterday" :content-inset-level="0.5">
-              <q-card>
-                <q-card-section>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Quidem, eius reprehenderit eos corrupti commodi magni quaerat
-                  ex numquam, dolorum officiis modi facere maiores architecto
-                  suscipit iste eveniet doloribus ullam aliquid.
-                </q-card-section>
-              </q-card>
-            </q-expansion-item>
-          </q-expansion-item>
-
-          <q-expansion-item
-            :content-inset-level="0.5"
-            expand-separator
-            icon="schedule"
-            label="Postponed"
-          >
-            <q-card>
-              <q-card-section>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Quidem, eius reprehenderit eos corrupti commodi magni quaerat ex
-                numquam, dolorum officiis modi facere maiores architecto
-                suscipit iste eveniet doloribus ullam aliquid.
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
-        </q-expansion-item> -->
       </q-list>
     </q-drawer>
 
@@ -112,7 +58,7 @@
   </q-layout>
 </template>
 
-<script>
+<script setup>
 const linksList = [
   {
     title: 'Typography',
@@ -140,12 +86,11 @@ const linksList = [
     ],
   },
 ];
-</script>
 
-<script setup>
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref, onMounted } from 'vue';
 import EssentialLink from 'components/EssentialLink.vue';
 import { useQuasar } from 'quasar';
+import { api } from 'boot/axios';
 
 const $q = useQuasar();
 
@@ -159,15 +104,21 @@ const dartModeIcon = computed(() =>
   $q.dark.isActive ? 'dark_mode' : 'light_mode',
 );
 
-// const init = () => {
-//   const darkMode = $q.localStorage.getItem('darkMode');
-//   $q.dark.set(darkMode);
-// };
-
-// init();
-
 const toggleDarkMode = () => {
   $q.dark.toggle();
   $q.localStorage.set('darkMode', $q.dark.isActive);
 };
+
+const signInUserInfo = ref(null);
+
+onMounted(async () => {
+  console.log('mainLayout onMounted');
+  try {
+    const response = await api.post('/auth/info', {});
+    console.log(JSON.stringify(response.data));
+    signInUserInfo.value = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+});
 </script>

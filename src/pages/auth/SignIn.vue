@@ -69,17 +69,13 @@ const onSubmit = async () => {
     `Username: ${form.value.username}, Password: ${form.value.password}`,
   );
 
-  const param = new URLSearchParams();
-  param.append('username', form.value.email);
-  param.append('password', form.value.password);
+  const param = {
+    username: form.value.email,
+    password: form.value.password,
+  };
 
   try {
-    //TODO: axios를 이용해서 로그인 요청, application/x-www-from-urlencoded 형식으로 요쳥을 보내야 한다.
-    const response = await api.post('/auth/sign-in', param, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+    const response = await api.post('/auth/sign-in', param);
 
     console.log(JSON.stringify(response.data));
 
