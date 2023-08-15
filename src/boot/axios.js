@@ -41,13 +41,13 @@ api.interceptors.response.use(
 
       try {
         const param = {
-          refresh_token: refreshToken,
+          refreshToken: refreshToken,
         };
         // Assuming you have an endpoint to refresh the token.
         const { data } = await api.post('/auth/refresh', param);
 
-        LocalStorage.set('accessToken', data.access_token);
-        LocalStorage.set('refreshToken', data.refresh_token);
+        LocalStorage.set('accessToken', data.accessToken);
+        LocalStorage.set('refreshToken', data.refreshToken);
         api.defaults.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(originalRequest); // Retry the original request with new token.
       } catch (refreshError) {
