@@ -34,11 +34,17 @@ export default route(function (/* { store, ssrContext } */) {
     const token = LocalStorage.getItem('accessToken');
     LoadingBar.start(); // 로딩바 시작
     if (!token && to.path !== '/auth/sign-in') {
+      LocalStorage.remove('accessToken');
+      LocalStorage.remove('refreshToken');
       if (to.path === '/auth/sign-up' || to.path === '/auth/sign-in') {
         next();
       } else {
         next('/auth/sign-in');
       } // else
+    } else if (to.path === '/auth/sign-in') {
+      LocalStorage.remove('accessToken');
+      LocalStorage.remove('refreshToken');
+      next();
     } else {
       next();
     } // else
