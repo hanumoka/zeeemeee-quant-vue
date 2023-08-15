@@ -16,10 +16,9 @@
         <q-btn flat round dense :icon="dartModeIcon" @click="toggleDarkMode" />
 
         <q-btn round size="sm" class="q-ml-md">
-          <!-- {{ signInUserInfo?.username }} -->
-          <q-avatar>
-            <img src="/logo.png" alt="" />
-          </q-avatar>
+          <q-avatar color="primary" text-color="white">{{
+            signInUserInfo?.username?.charAt(0)
+          }}</q-avatar>
           <q-menu :offset="[0, 10]">
             <q-list style="min-width: 100px">
               <q-item clickable v-close-popup to="/profile">
