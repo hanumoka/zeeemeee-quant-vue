@@ -37,10 +37,10 @@
               color="primary"
               :disable="loading"
               label="수집하기"
-              @click="addRow"
+              @click="collectKrxStockItems"
             />
             <q-input
-              class="q-ml-lg"
+              class="q-ml-lg q-mr-md"
               dense
               debounce="300"
               color="primary"
@@ -57,6 +57,13 @@
                 />
               </template>
             </q-input>
+            <q-btn
+              v-if="rows.length !== 0"
+              color="negative"
+              :disable="loading"
+              label="전체삭제"
+              @click="removeRow"
+            />
             <q-space />
             <q-input dense debounce="300" color="primary" v-model="filter">
               <template v-slot:append>
@@ -216,6 +223,9 @@ const columns = [
 
 import { ref, onMounted } from 'vue';
 import { api } from 'boot/axios';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
 
 const tableRef = ref();
 const rows = ref([]);
@@ -245,7 +255,7 @@ async function onRequest(props) {
     // filter,
   };
 
-  const response = await api.get('/finance_data_reader/krx_items/_paging', {
+  const response = await api.get('/finance_data_reader/krx_items/_paginate', {
     params,
   });
 
@@ -263,6 +273,23 @@ async function onRequest(props) {
   // ...and turn of loading indicator
   loading.value = false;
 }
+
+const collectKrxStockItems = async () => {
+  console.log('collectKrxStockItems');
+
+  const apiResult = await api
+    .post('/finance_data_reader/krx-itmes/_collect')
+    .then(response => {
+      console.log(response.data);
+      $q.notify({
+        message: '수집이 완료되었습니다.',
+        color: 'positive',
+        icon: 'cloud_done',
+      });
+
+      tableRef.value.requestServerInteraction();
+    });
+};
 
 onMounted(() => {
   // get initial data from server (1st page)
