@@ -1,14 +1,14 @@
 <template>
   <q-page>
     <section class="q-pa-xl">
-      <div class="text-h4">KRX 종목리스트</div>
+      <div class="text-h4">KRX 종목수집</div>
       <q-separator class="q-my-md" />
       <div class="q-pa-xs">
         <q-table
           flat
           bordered
           ref="tableRef"
-          title="KRX 종목리스트"
+          title="KRX 종목수집"
           :rows="rows"
           :columns="columns"
           row-key="_id"

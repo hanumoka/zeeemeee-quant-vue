@@ -27,8 +27,13 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: 'krx-stock-items',
-        component: () => import('pages/finance_data_reader/KrxStockItems.vue'),
+        path: 'krx-items',
+        component: () => import('src/pages/finance_data_reader/KrxItems.vue'),
+      },
+      {
+        path: 'krx-daily-trade-data',
+        component: () =>
+          import('src/pages/finance_data_reader/KrxDailyTradeData.vue'),
       },
     ],
   },

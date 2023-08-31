@@ -37,10 +37,10 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
         <q-item-label header>
-          <q-avatar size="lg" class="q-mr-sm">
+          <!-- <q-avatar size="lg" class="q-mr-sm">
             <img src="https://cdn.quasar.dev/img/avatar.png" />
-          </q-avatar>
-          <span>Quasar v{{ $q.version }}</span>
+          </q-avatar> -->
+          <span>Sonjul v0.0.1</span>
         </q-item-label>
 
         <EssentialLink
@@ -77,10 +77,16 @@ const linksList = [
     icon: 'school',
     subLinks: [
       {
-        title: 'KRX-Stock-Items',
+        title: 'KRX Items',
         caption: 'KRX 주식종목 수집기',
         icon: 'email',
-        to: '/finance-data-reader/krx-stock-items',
+        to: '/finance-data-reader/krx-items',
+      },
+      {
+        title: 'KRX Daily Trade Data',
+        caption: 'KRX 일일거래정보',
+        icon: 'email',
+        to: '/finance-data-reader/krx-daily-trade-data',
       },
     ],
   },
