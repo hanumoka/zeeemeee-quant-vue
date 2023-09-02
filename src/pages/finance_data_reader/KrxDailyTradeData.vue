@@ -18,63 +18,101 @@
           @request="onRequest"
         >
           <template v-slot:top>
-            <q-select
-              dense
-              v-model="selectedKrxCollectId"
-              :options="savedKrxCollectIdList"
-              label="KrxCollectId"
-              style="width: 300px"
-            >
-              <template v-slot:append>
-                <q-icon
-                  name="close"
-                  @click.stop.prevent="selectedKrxCollectId = ''"
-                  class="cursor-pointer"
-                />
-              </template>
-            </q-select>
-            <q-btn
-              color="primary"
-              :disable="loading"
-              label="수집하기"
-              @click="collectKrxDailyTradeData"
-            />
-            <q-input
-              class="q-ml-lg q-mr-md"
-              dense
-              debounce="300"
-              color="primary"
-              label="삭제할 collectId"
-              v-model="collectIdToDelete"
-            >
-              <template v-slot:after>
-                <q-btn
-                  v-if="rows.length !== 0"
-                  color="negative"
-                  :disable="loading"
-                  label="삭제하기"
-                  @click="deleteData"
-                />
-              </template>
-            </q-input>
-            <!-- <div class="row q-gutter-xs col-xs-6">
-              <div class="col" style="width: 200px">
+            <div class="q-pa-md row full-width" style="border: 1px solid red">
+              <div class="col row items-center">
                 <q-select
                   dense
-                  v-model="selectedCollectId"
-                  :options="savedCollectIdList"
-                  label="collectId"
+                  v-model="selectedKrxCollectId"
+                  :options="savedKrxCollectIdList"
+                  label="KrxCollectId"
+                  style="width: 300px"
+                  class="q-mr-md"
                 >
                   <template v-slot:append>
                     <q-icon
                       name="close"
-                      @click.stop.prevent="selectedCollectId = ''"
+                      @click.stop.prevent="selectedKrxCollectId = ''"
+                      class="cursor-pointer"
+                    />
+                  </template>
+                </q-select>
+                <q-btn
+                  color="primary"
+                  :disable="loading"
+                  label="수집하기"
+                  @click="collectKrxDailyTradeData"
+                />
+              </div>
+              <div class="col row items-center">
+                <q-input
+                  class="q-ml-lg q-mr-md"
+                  dense
+                  debounce="300"
+                  color="primary"
+                  label="삭제할 collectId"
+                  v-model="collectIdToDelete"
+                >
+                  <template v-slot:after>
+                    <q-btn
+                      v-if="rows.length !== 0"
+                      color="negative"
+                      :disable="loading"
+                      label="삭제하기"
+                      @click="deleteData"
+                    />
+                  </template>
+                </q-input>
+              </div>
+            </div>
+
+            <div class="q-pa-md row full-width" style="border: 1px solid red">
+              <div class="col row items-center q-mr-md">
+                <q-select
+                  dense
+                  v-model="selectedKrxDailyTradeDataCollectId"
+                  :options="savedKrxDailyTradeDataCollectIdList"
+                  label="collectId"
+                  style="width: 300px"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      name="close"
+                      @click.stop.prevent="
+                        selectedKrxDailyTradeDataCollectId = ''
+                      "
                       class="cursor-pointer"
                     />
                   </template>
                 </q-select>
               </div>
-              <div class="col-3">
+              <div class="col row items-center">
+                <q-input
+                  dense
+                  debounce="300"
+                  color="primary"
+                  v-model="dateRangeDisplay"
+                  readonly
+                  v-on:click="showCalendar = !showCalendar"
+                  label="날짜 범위"
+                  style="width: 250px"
+                />
+
+                <q-popup-proxy v-if="showCalendar">
+                  <q-date
+                    v-model="startDate"
+                    mask="YYYY-MM-DD"
+                    :max="endDate"
+                    :popup-content-class="'date-popup-content'"
+                  />
+                  <q-date
+                    v-model="endDate"
+                    mask="YYYY-MM-DD"
+                    :min="startDate"
+                    :popup-content-class="'date-popup-content'"
+                  />
+                </q-popup-proxy>
+              </div>
+              <div class="col row items-center">
                 <q-input
                   dense
                   debounce="300"
@@ -82,8 +120,6 @@
                   v-model.lazy="searchKeyword"
                 >
                 </q-input>
-              </div>
-              <div class="col-2">
                 <q-btn
                   color="primary"
                   :disable="loading"
@@ -91,7 +127,7 @@
                   @click="fetch"
                 />
               </div>
-            </div> -->
+            </div>
           </template>
         </q-table>
       </div>
@@ -101,13 +137,13 @@
 
 <script setup>
 const columns = [
-  {
-    name: '_id',
-    required: true,
-    label: '_id',
-    align: 'left',
-    field: row => row._id,
-  },
+  // {
+  //   name: '_id',
+  //   required: true,
+  //   label: '_id',
+  //   align: 'left',
+  //   field: row => row._id,
+  // },
   {
     name: 'collectId',
     required: true,
@@ -123,11 +159,32 @@ const columns = [
     field: row => row.code,
   },
   {
+    name: 'name',
+    required: true,
+    label: 'name',
+    align: 'left',
+    field: row => row.name,
+  },
+  {
+    name: 'market',
+    required: true,
+    label: 'market',
+    align: 'left',
+    field: row => row.market,
+  },
+  {
     name: 'date',
     required: true,
     label: 'date',
     align: 'left',
-    field: row => row.date,
+    field: row => {
+      const date = new Date(row.date);
+      return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+    },
   },
   {
     name: 'open',
@@ -171,118 +228,6 @@ const columns = [
     align: 'left',
     field: row => row.change,
   },
-  // {
-  //   name: 'isuCd',
-  //   required: true,
-  //   label: 'isuCd',
-  //   align: 'left',
-  //   field: row => row.isuCd,
-  // },
-  // {
-  //   name: 'name',
-  //   required: true,
-  //   label: 'name',
-  //   align: 'left',
-  //   field: row => row.name,
-  // },
-  // {
-  //   name: 'market',
-  //   required: true,
-  //   label: 'market',
-  //   align: 'left',
-  //   field: row => row.market,
-  // },
-  // {
-  //   name: 'dept',
-  //   required: false,
-  //   label: 'dept',
-  //   align: 'left',
-  //   field: row => row.dept,
-  // },
-  // {
-  //   name: 'close',
-  //   required: false,
-  //   label: 'close',
-  //   align: 'left',
-  //   field: row => row.close,
-  // },
-  // {
-  //   name: 'changeCode',
-  //   required: false,
-  //   label: 'changeCode',
-  //   align: 'left',
-  //   field: row => row.changeCode,
-  // },
-  // {
-  //   name: 'changes',
-  //   required: false,
-  //   label: 'changes',
-  //   align: 'left',
-  //   field: row => row.changes,
-  // },
-  // {
-  //   name: 'changesRatio',
-  //   required: false,
-  //   label: 'changesRatio',
-  //   align: 'left',
-  //   field: row => row.changesRatio,
-  // },
-  // {
-  //   name: 'open',
-  //   required: false,
-  //   label: 'open',
-  //   align: 'left',
-  //   field: row => row.open,
-  // },
-  // {
-  //   name: 'high',
-  //   required: false,
-  //   label: 'high',
-  //   align: 'left',
-  //   field: row => row.high,
-  // },
-  // {
-  //   name: 'low',
-  //   required: false,
-  //   label: 'low',
-  //   align: 'left',
-  //   field: row => row.low,
-  // },
-  // {
-  //   name: 'volume',
-  //   required: false,
-  //   label: 'volume',
-  //   align: 'left',
-  //   field: row => row.volume,
-  // },
-  // {
-  //   name: 'amount',
-  //   required: false,
-  //   label: 'amount',
-  //   align: 'left',
-  //   field: row => row.amount,
-  // },
-  // {
-  //   name: 'marcap',
-  //   required: false,
-  //   label: 'marcap',
-  //   align: 'left',
-  //   field: row => row.marcap,
-  // },
-  // {
-  //   name: 'stocks',
-  //   required: false,
-  //   label: 'stocks',
-  //   align: 'left',
-  //   field: row => row.stocks,
-  // },
-  // {
-  //   name: 'marketId',
-  //   required: false,
-  //   label: 'marketId',
-  //   align: 'left',
-  //   field: row => row.marketId,
-  // },
   {
     name: 'collectingDate',
     required: false,
@@ -292,7 +237,7 @@ const columns = [
   },
 ];
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
 
@@ -314,7 +259,22 @@ const pagination = ref({
 const savedKrxCollectIdList = ref([]);
 const selectedKrxCollectId = ref(null);
 
+const savedKrxDailyTradeDataCollectIdList = ref([]);
+const selectedKrxDailyTradeDataCollectId = ref(null);
+
 const collectIdToDelete = ref(null);
+
+const startDate = ref('');
+const endDate = ref('');
+const dateRangeDisplay = ref('');
+const showCalendar = ref(false);
+
+watch([startDate, endDate], () => {
+  if (startDate.value && endDate.value) {
+    dateRangeDisplay.value = `${startDate.value} - ${endDate.value}`;
+    showCalendar.value = false;
+  }
+});
 
 async function onRequest(props) {
   const { page, rowsPerPage, sortBy, descending } = props.pagination;
@@ -326,7 +286,9 @@ async function onRequest(props) {
     page,
     limit: rowsPerPage,
     allRows: rowsPerPage === 0 ? true : false,
-    collect_id: selectedKrxCollectId.value,
+    collect_id: selectedKrxDailyTradeDataCollectId.value,
+    start_date: startDate.value,
+    end_date: endDate.value,
     search_keyword: searchKeyword.value,
     // sortBy,
     // descending,
@@ -384,7 +346,7 @@ const collectKrxDailyTradeData = async () => {
     });
 };
 
-const getCollectIds = async () => {
+const getKrxItmesCollectIds = async () => {
   const apiResult = await api
     .get('/finance-data-reader/krx-items/collect-ids')
     .then(response => {
@@ -392,6 +354,16 @@ const getCollectIds = async () => {
       return response.data;
     });
 
+  return apiResult;
+};
+
+const getKrxItmesDailyTradeDataCollectIds = async () => {
+  const apiResult = await api
+    .get('/finance-data-reader/krx-items/daily-trade-data/collect-ids')
+    .then(response => {
+      console.log(response.data);
+      return response.data;
+    });
   return apiResult;
 };
 
@@ -403,7 +375,9 @@ const fetch = async () => {
 const initPage = async () => {
   console.log('initPage');
   tableRef.value.requestServerInteraction();
-  savedKrxCollectIdList.value = await getCollectIds();
+  savedKrxCollectIdList.value = await getKrxItmesCollectIds();
+  savedKrxDailyTradeDataCollectIdList.value =
+    await getKrxItmesDailyTradeDataCollectIds();
 };
 
 const deleteData = async () => {
@@ -411,9 +385,12 @@ const deleteData = async () => {
   const params = {
     collect_id: collectIdToDelete.value,
   };
-  const response = await api.delete('/finance-data-reader/krx-items', {
-    params,
-  });
+  const response = await api.delete(
+    '/finance-data-reader/krx-items/daily-trade-data',
+    {
+      params,
+    },
+  );
   initPage();
 };
 
