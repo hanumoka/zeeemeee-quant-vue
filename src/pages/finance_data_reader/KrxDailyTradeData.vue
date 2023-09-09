@@ -18,7 +18,7 @@
           @request="onRequest"
         >
           <template v-slot:top>
-            <div class="q-pa-md row full-width" style="border: 1px solid red">
+            <div class="q-pa-md row full-width">
               <div class="col row items-center">
                 <q-select
                   dense
@@ -65,7 +65,7 @@
               </div>
             </div>
 
-            <div class="q-pa-md row full-width" style="border: 1px solid red">
+            <div class="q-pa-md row full-width">
               <div class="col row items-center q-mr-md">
                 <q-select
                   dense
@@ -137,13 +137,6 @@
 
 <script setup>
 const columns = [
-  // {
-  //   name: '_id',
-  //   required: true,
-  //   label: '_id',
-  //   align: 'left',
-  //   field: row => row._id,
-  // },
   {
     name: 'collectId',
     required: true,
@@ -223,6 +216,41 @@ const columns = [
   },
   {
     name: 'change',
+    required: true,
+    label: 'change',
+    align: 'left',
+    field: row => row.change,
+  },
+  {
+    name: 'short',
+    required: true,
+    label: 'change',
+    align: 'left',
+    field: row => row.change,
+  },
+  {
+    name: 'long',
+    required: true,
+    label: 'change',
+    align: 'left',
+    field: row => row.change,
+  },
+  {
+    name: 'macd',
+    required: true,
+    label: 'change',
+    align: 'left',
+    field: row => row.change,
+  },
+  {
+    name: 'signal',
+    required: true,
+    label: 'change',
+    align: 'left',
+    field: row => row.change,
+  },
+  {
+    name: 'macd_oscillator',
     required: true,
     label: 'change',
     align: 'left',
@@ -333,8 +361,6 @@ const collectKrxDailyTradeData = async () => {
         color: 'positive',
         icon: 'cloud_done',
       });
-
-      initPage();
     })
     .catch(error => {
       console.log(error);
@@ -374,7 +400,7 @@ const fetch = async () => {
 
 const initPage = async () => {
   console.log('initPage');
-  tableRef.value.requestServerInteraction();
+  // tableRef.value.requestServerInteraction();
   savedKrxCollectIdList.value = await getKrxItmesCollectIds();
   savedKrxDailyTradeDataCollectIdList.value =
     await getKrxItmesDailyTradeDataCollectIds();
