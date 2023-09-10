@@ -1,70 +1,23 @@
 <template>
   <q-page>
     <section class="q-pa-xl">
-      <div class="text-h4">KRX 거래정보수집</div>
+      <div class="text-h4">FDR 대시보드</div>
       <q-separator class="q-my-md" />
       <div class="q-pa-xs">
         <q-table
           flat
           bordered
+          dense
           ref="tableRef"
-          title="KRX 거래정보수집"
+          title="FDR 대시보드"
           :rows="rows"
           :columns="columns"
           row-key="_id"
-          v-model:pagination="pagination"
           :loading="loading"
           binary-state-sort
           @request="onRequest"
         >
           <template v-slot:top>
-            <div class="q-pa-md row full-width">
-              <div class="col row items-center">
-                <q-select
-                  dense
-                  v-model="selectedKrxCollectId"
-                  :options="savedKrxCollectIdList"
-                  label="KrxCollectId"
-                  style="width: 300px"
-                  class="q-mr-md"
-                >
-                  <template v-slot:append>
-                    <q-icon
-                      name="close"
-                      @click.stop.prevent="selectedKrxCollectId = ''"
-                      class="cursor-pointer"
-                    />
-                  </template>
-                </q-select>
-                <q-btn
-                  color="primary"
-                  :disable="loading"
-                  label="수집하기"
-                  @click="collectKrxDailyTradeData"
-                />
-              </div>
-              <div class="col row items-center">
-                <q-input
-                  class="q-ml-lg q-mr-md"
-                  dense
-                  debounce="300"
-                  color="primary"
-                  label="삭제할 collectId"
-                  v-model="collectIdToDelete"
-                >
-                  <template v-slot:after>
-                    <q-btn
-                      v-if="rows.length !== 0"
-                      color="negative"
-                      :disable="loading"
-                      label="삭제하기"
-                      @click="deleteData"
-                    />
-                  </template>
-                </q-input>
-              </div>
-            </div>
-
             <div class="q-pa-md row full-width">
               <div class="col row items-center q-mr-md">
                 <q-select
@@ -129,34 +82,34 @@
               </div>
             </div>
 
-            <!-- <div class="q-pa-md row full-width">
+            <div class="q-pa-md row full-width">
               <div class="col row items-center">
                 <q-input
                   dense
                   debounce="300"
                   color="primary"
-                  v-model.lazy="short_n"
-                  label="short_n"
+                  v-model.lazy="macd_short_n"
+                  label="macd_short_n"
                 >
                 </q-input>
                 <q-input
                   dense
                   debounce="300"
                   color="primary"
-                  v-model.lazy="long_n"
-                  label="long_n"
+                  v-model.lazy="macd_long_n"
+                  label="macd_long_n"
                 >
                 </q-input>
                 <q-input
                   dense
                   debounce="300"
                   color="primary"
-                  v-model.lazy="signal_n"
-                  label="signal_n"
+                  v-model.lazy="macd_signal_n"
+                  label="macd_signal_n"
                 >
                 </q-input>
               </div>
-            </div> -->
+            </div>
           </template>
         </q-table>
       </div>
@@ -250,41 +203,41 @@ const columns = [
     align: 'left',
     field: row => row.change,
   },
-  // {
-  //   name: 'short',
-  //   required: true,
-  //   label: 'short',
-  //   align: 'left',
-  //   field: row => row.short,
-  // },
-  // {
-  //   name: 'long',
-  //   required: true,
-  //   label: 'long',
-  //   align: 'left',
-  //   field: row => row.long,
-  // },
-  // {
-  //   name: 'macd',
-  //   required: true,
-  //   label: 'macd',
-  //   align: 'left',
-  //   field: row => row.macd,
-  // },
-  // {
-  //   name: 'signal',
-  //   required: true,
-  //   label: 'signal',
-  //   align: 'left',
-  //   field: row => row.signal,
-  // },
-  // {
-  //   name: 'macdOscillator',
-  //   required: true,
-  //   label: 'macdOscillator',
-  //   align: 'left',
-  //   field: row => row.macdOscillator,
-  // },
+  {
+    name: 'short',
+    required: true,
+    label: 'short',
+    align: 'left',
+    field: row => row.short,
+  },
+  {
+    name: 'long',
+    required: true,
+    label: 'long',
+    align: 'left',
+    field: row => row.long,
+  },
+  {
+    name: 'macd',
+    required: true,
+    label: 'macd',
+    align: 'left',
+    field: row => row.macd,
+  },
+  {
+    name: 'signal',
+    required: true,
+    label: 'signal',
+    align: 'left',
+    field: row => row.signal,
+  },
+  {
+    name: 'macdOscillator',
+    required: true,
+    label: 'macdOscillator',
+    align: 'left',
+    field: row => row.macdOscillator,
+  },
   {
     name: 'collectingDate',
     required: false,
@@ -305,30 +258,30 @@ const rows = ref([]);
 // const filter = ref('');
 const searchKeyword = ref(null);
 const loading = ref(false);
-const pagination = ref({
-  sortBy: 'desc',
-  descending: false,
-  page: 1,
-  rowsPerPage: 10,
-  rowsNumber: null,
-});
+// const pagination = ref({
+//   sortBy: 'desc',
+//   descending: false,
+//   page: 1,
+//   rowsPerPage: 10,
+//   rowsNumber: null,
+// });
 
-const savedKrxCollectIdList = ref([]);
-const selectedKrxCollectId = ref(null);
+// const savedKrxCollectIdList = ref([]);
+// const selectedKrxCollectId = ref(null);
 
 const savedKrxDailyTradeDataCollectIdList = ref([]);
 const selectedKrxDailyTradeDataCollectId = ref(null);
 
-const collectIdToDelete = ref(null);
+// const collectIdToDelete = ref(null);
 
 const startDate = ref('');
 const endDate = ref('');
 const dateRangeDisplay = ref('');
 const showCalendar = ref(false);
 
-const short_n = ref(12);
-const long_n = ref(26);
-const signal_n = ref(9);
+const macd_short_n = ref(12);
+const macd_long_n = ref(26);
+const macd_signal_n = ref(9);
 
 watch([startDate, endDate], () => {
   if (startDate.value && endDate.value) {
@@ -338,86 +291,47 @@ watch([startDate, endDate], () => {
 });
 
 async function onRequest(props) {
-  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  // const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
   loading.value = true;
 
   //1. 서버로부터 데이터를 가져온자.
   const params = {
-    page,
-    limit: rowsPerPage,
-    allRows: rowsPerPage === 0 ? true : false,
+    // page,
+    // limit: rowsPerPage,
+    // allRows: rowsPerPage === 0 ? true : false,
     collect_id: selectedKrxDailyTradeDataCollectId.value,
     start_date: startDate.value,
     end_date: endDate.value,
     search_keyword: searchKeyword.value,
-    // short_n: short_n.value,
-    // long_n: long_n.value,
-    // signal_n: signal_n.value,
+    macd_short_n: macd_short_n.value,
+    macd_long_n: macd_long_n.value,
+    macd_signal_n: macd_signal_n.value,
     // sortBy,
     // descending,
     // filter,
   };
 
-  const response = await api.get(
-    '/finance-data-reader/krx-items/daily-trade-data/_paginate',
-    {
-      params,
-    },
-  );
+  const response = await api.get('/finance-data-reader/dashboard', {
+    params,
+  });
 
-  pagination.value.rowsNumber = response.data.totalItems;
+  console.log(response.data);
 
-  // clear out existing data and add new
-  rows.value.splice(0, rows.value.length, ...response.data.items);
+  // pagination.value.rowsNumber = response.data.size();
 
-  // don't forget to update local pagination object
-  pagination.value.page = page;
-  pagination.value.rowsPerPage = rowsPerPage;
-  pagination.value.sortBy = sortBy;
-  pagination.value.descending = descending;
+  // // clear out existing data and add new
+  rows.value.splice(0, rows.value.length, ...response.data);
+
+  // // don't forget to update local pagination object
+  // pagination.value.page = page;
+  // pagination.value.rowsPerPage = rowsPerPage;
+  // pagination.value.sortBy = sortBy;
+  // pagination.value.descending = descending;
 
   // ...and turn of loading indicator
   loading.value = false;
 }
-
-const collectKrxDailyTradeData = async () => {
-  console.log('collectKrxDailyTradeData');
-
-  const param = {
-    collectId: selectedKrxCollectId.value,
-  };
-
-  const apiResult = await api
-    .post('/finance-data-reader/krx-itmes/daily-trade-data/_collect', param)
-    .then(response => {
-      console.log(response.data);
-      $q.notify({
-        message: '수집이 진행중입니다.(대략 16분 소요)',
-        color: 'positive',
-        icon: 'cloud_done',
-      });
-    })
-    .catch(error => {
-      console.log(error);
-      $q.notify({
-        message: '수집이 실패하였습니다.' + error.message,
-        color: 'negative',
-        icon: 'cloud_done',
-      });
-    });
-};
-
-const getKrxItmesCollectIds = async () => {
-  const apiResult = await api
-    .get('/finance-data-reader/krx-items/collect-ids')
-    .then(response => {
-      console.log(response.data);
-      return response.data;
-    });
-
-  return apiResult;
-};
 
 const getKrxItmesDailyTradeDataCollectIds = async () => {
   const apiResult = await api
@@ -436,24 +350,8 @@ const fetch = async () => {
 
 const initPage = async () => {
   console.log('initPage');
-  // tableRef.value.requestServerInteraction();
-  savedKrxCollectIdList.value = await getKrxItmesCollectIds();
   savedKrxDailyTradeDataCollectIdList.value =
     await getKrxItmesDailyTradeDataCollectIds();
-};
-
-const deleteData = async () => {
-  console.log('deleteData');
-  const params = {
-    collect_id: collectIdToDelete.value,
-  };
-  const response = await api.delete(
-    '/finance-data-reader/krx-items/daily-trade-data',
-    {
-      params,
-    },
-  );
-  initPage();
 };
 
 onMounted(() => {

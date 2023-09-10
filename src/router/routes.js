@@ -27,6 +27,10 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
+        path: 'dashboard',
+        component: () => import('src/pages/finance_data_reader/DashBoard.vue'),
+      },
+      {
         path: 'krx-items',
         component: () => import('src/pages/finance_data_reader/KrxItems.vue'),
       },

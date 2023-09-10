@@ -77,6 +77,12 @@ const linksList = [
     icon: 'school',
     subLinks: [
       {
+        title: 'Dashboard',
+        caption: '대시보드',
+        icon: 'email',
+        to: '/finance-data-reader/dashboard',
+      },
+      {
         title: 'KRX Items',
         caption: 'KRX 주식종목 수집기',
         icon: 'email',
