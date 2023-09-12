@@ -113,6 +113,7 @@
           </template>
         </q-table>
       </div>
+      max_draw_down: {{ max_draw_down }}
     </section>
   </q-page>
 </template>
@@ -239,6 +240,34 @@ const columns = [
     field: row => row.macdOscillator,
   },
   {
+    name: 'dailyReturn',
+    required: true,
+    label: 'dailyReturn',
+    align: 'left',
+    field: row => row.dailyReturn,
+  },
+  {
+    name: 'cumReturn',
+    required: true,
+    label: 'cumReturn',
+    align: 'left',
+    field: row => row.cumReturn,
+  },
+  {
+    name: 'maxCumReturn',
+    required: true,
+    label: 'maxCumReturn',
+    align: 'left',
+    field: row => row.maxCumReturn,
+  },
+  {
+    name: 'drawDown',
+    required: true,
+    label: 'drawDown',
+    align: 'left',
+    field: row => row.drawDown,
+  },
+  {
     name: 'collectingDate',
     required: false,
     label: 'collectingDate',
@@ -255,6 +284,9 @@ const $q = useQuasar();
 
 const tableRef = ref();
 const rows = ref([]);
+
+const max_draw_down = ref(0);
+
 // const filter = ref('');
 const searchKeyword = ref(null);
 const loading = ref(false);
@@ -321,7 +353,8 @@ async function onRequest(props) {
   // pagination.value.rowsNumber = response.data.size();
 
   // // clear out existing data and add new
-  rows.value.splice(0, rows.value.length, ...response.data);
+  rows.value.splice(0, rows.value.length, ...response.data.dataList);
+  max_draw_down.value = response.data.maxDrawDown;
 
   // // don't forget to update local pagination object
   // pagination.value.page = page;
