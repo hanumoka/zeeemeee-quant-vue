@@ -3,10 +3,7 @@
     <q-card flat :style="{ minWidth: '400px' }">
       <q-card-section>
         <div class="text-h6 text-weight-bold">로그인하기</div>
-        <div class="text-subtitle2 text-grey">
-          주식가치가 정확히 측정하능한 것이었다면, 증권시장은 존재할 필요가
-          없다.
-        </div>
+        <div class="text-subtitle2 text-grey">개발중...</div>
       </q-card-section>
       <q-card-section>
         <q-form @submit="onSubmit">
