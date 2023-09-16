@@ -59,18 +59,18 @@
 
 <script setup>
 const linksList = [
-  {
-    title: 'Typography',
-    caption: 'quasar.dev',
-    icon: 'school',
-    to: '/typography',
-  },
-  {
-    title: 'Colors',
-    caption: 'quasar.dev',
-    icon: 'school',
-    to: '/colors',
-  },
+  // {
+  //   title: 'Typography',
+  //   caption: 'quasar.dev',
+  //   icon: 'school',
+  //   to: '/typography',
+  // },
+  // {
+  //   title: 'Colors',
+  //   caption: 'quasar.dev',
+  //   icon: 'school',
+  //   to: '/colors',
+  // },
   {
     title: 'finacne-data-reader',
     caption: '주식수집기',
