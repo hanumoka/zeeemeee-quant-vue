@@ -102,6 +102,19 @@ const linksList = [
       },
     ],
   },
+  {
+    title: 'test',
+    caption: 'test',
+    icon: 'school',
+    subLinks: [
+      {
+        title: 'ApexChartTest',
+        caption: 'ApexChartTest',
+        icon: 'email',
+        to: '/test/apex-chart-test',
+      },
+    ],
+  },
 ];
 
 import { computed, defineComponent, ref, onMounted } from 'vue';

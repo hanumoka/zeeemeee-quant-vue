@@ -46,6 +46,18 @@ const routes = [
     ],
   },
 
+  //test
+  {
+    path: '/test',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: 'apex-chart-test',
+        component: () => import('src/pages/test/ApexChartTest.vue'),
+      },
+    ],
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {
