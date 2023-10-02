@@ -108,10 +108,16 @@ const linksList = [
     icon: 'school',
     subLinks: [
       {
-        title: 'ApexChartTest',
-        caption: 'ApexChartTest',
+        title: 'ApexChartTest1',
+        caption: 'ApexChartTest1',
         icon: 'email',
-        to: '/test/apex-chart-test',
+        to: '/test/apex-chart-test/1',
+      },
+      {
+        title: 'ApexChartTest2',
+        caption: 'ApexChartTest2',
+        icon: 'email',
+        to: '/test/apex-chart-test/2',
       },
     ],
   },

@@ -52,8 +52,12 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: 'apex-chart-test',
-        component: () => import('src/pages/test/ApexChartTest.vue'),
+        path: 'apex-chart-test/1',
+        component: () => import('src/pages/test/ApexChartTest1.vue'),
+      },
+      {
+        path: 'apex-chart-test/2',
+        component: () => import('src/pages/test/ApexChartTest2.vue'),
       },
     ],
   },
