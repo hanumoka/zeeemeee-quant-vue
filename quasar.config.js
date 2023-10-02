@@ -33,6 +33,7 @@ module.exports = configure(function (/* ctx */) {
       'loading-plugin',
       'loading-bar-plugin',
       'axios',
+      'apexchart',
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
