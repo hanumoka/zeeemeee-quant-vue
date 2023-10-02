@@ -18,58 +18,30 @@
           @request="onRequest"
         >
           <template v-slot:top>
-            <!-- <q-btn
-              color="primary"
-              :disable="loading"
-              label="수집하기"
-              @click="collectKrxStockItems"
-            />
-            <q-input
-              class="q-ml-lg q-mr-md"
-              dense
-              debounce="300"
-              color="primary"
-              label="삭제할 collectId"
-              v-model="collectIdToDelete"
-            >
-              <template v-slot:after>
-                <q-btn
-                  v-if="rows.length !== 0"
-                  color="negative"
-                  :disable="loading"
-                  label="삭제하기"
-                  @click="deleteData"
-                />
-              </template>
-            </q-input> -->
-            <q-space />
+            <!-- <q-space /> -->
             <div class="row q-gutter-xs col-xs-6">
-              <div class="col" style="width: 200px">
-                <q-select
-                  dense
-                  v-model="selectedCollectId"
-                  :options="savedCollectIdList"
-                  label="collectId"
-                >
-                  <template v-slot:append>
-                    <q-icon
-                      name="close"
-                      @click.stop.prevent="selectedCollectId = ''"
-                      class="cursor-pointer"
-                    />
-                  </template>
-                </q-select>
-              </div>
-              <div class="col-3">
+              <div class="col-4">
                 <q-input
                   dense
                   debounce="300"
                   color="primary"
-                  v-model.lazy="searchKeyword"
+                  label="jobId"
+                  v-model.lazy="searchJobId"
                 >
                 </q-input>
               </div>
-              <div class="col-2">
+              <div class="col-4">
+                <q-input
+                  ref="qInputRef"
+                  dense
+                  color="primary"
+                  label="searchKeyword"
+                  :model-value="searchKeyword"
+                >
+                </q-input>
+                <div>{{ searchKeyword }}</div>
+              </div>
+              <div class="col-3">
                 <q-btn
                   color="primary"
                   :disable="loading"
@@ -236,8 +208,11 @@ import { useQuasar } from 'quasar';
 const $q = useQuasar();
 
 const tableRef = ref();
+const qInputRef = ref();
+
 const rows = ref([]);
 // const filter = ref('');
+const searchJobId = ref(null);
 const searchKeyword = ref(null);
 const loading = ref(false);
 const pagination = ref({
@@ -248,10 +223,10 @@ const pagination = ref({
   rowsNumber: null,
 });
 
-const savedCollectIdList = ref([]);
-const selectedCollectId = ref(null);
+// const savedJobIdList = ref([]);
+// const selectedJobId = ref(null);
 
-const collectIdToDelete = ref(null);
+// const collectIdToDelete = ref(null);
 
 async function onRequest(props) {
   const { page, rowsPerPage, sortBy, descending } = props.pagination;
@@ -263,11 +238,9 @@ async function onRequest(props) {
     page,
     limit: rowsPerPage,
     allRows: rowsPerPage === 0 ? true : false,
-    collect_id: selectedCollectId.value,
-    search_keyword: searchKeyword.value,
-    // sortBy,
-    // descending,
-    // filter,
+    // collect_id: selectedJobId.value,
+    searchJobId: searchJobId.value,
+    searchKeyword: searchKeyword.value,
   };
 
   const response = await api.get('/finance-data-reader/krx-items/_paginate', {
@@ -306,17 +279,6 @@ const collectKrxStockItems = async () => {
     });
 };
 
-const getCollectIds = async () => {
-  const apiResult = await api
-    .get('/finance-data-reader/krx-items/collect-ids')
-    .then(response => {
-      console.log(response.data);
-      return response.data;
-    });
-
-  return apiResult;
-};
-
 const fetch = async () => {
   console.log('fetch');
   tableRef.value.requestServerInteraction();
@@ -325,22 +287,21 @@ const fetch = async () => {
 const initPage = async () => {
   console.log('initPage');
   tableRef.value.requestServerInteraction();
-  savedCollectIdList.value = await getCollectIds();
 };
 
-// const deleteData = async () => {
-//   console.log('deleteData');
-//   const params = {
-//     collect_id: collectIdToDelete.value,
-//   };
-//   const response = await api.delete('/finance-data-reader/krx-items', {
-//     params,
-//   });
-//   initPage();
-// };
+const onInput = ({ target: { value } }) => {
+  searchKeyword.value = value;
+};
 
 onMounted(() => {
   console.log('onMounted');
+
+  const el = qInputRef.value.getNativeElement();
+  el.addEventListener('input', e => {
+    console.log('input', e.target.value);
+    searchKeyword.value = e.target.value;
+  });
+
   initPage();
 });
 </script>
