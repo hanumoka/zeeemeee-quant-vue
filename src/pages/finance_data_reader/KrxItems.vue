@@ -262,22 +262,22 @@ async function onRequest(props) {
   loading.value = false;
 }
 
-const collectKrxStockItems = async () => {
-  console.log('collectKrxStockItems');
+// const collectKrxStockItems = async () => {
+//   console.log('collectKrxStockItems');
 
-  const apiResult = await api
-    .post('/task/fdr/start-collecting/FDR_COLLECT_KRX_ITEMS')
-    .then(response => {
-      console.log(response.data);
-      $q.notify({
-        message: '수집이 완료되었습니다.',
-        color: 'positive',
-        icon: 'cloud_done',
-      });
+//   const apiResult = await api
+//     .post('/task/fdr/start-collecting/FDR_COLLECT_KRX_ITEMS')
+//     .then(response => {
+//       console.log(response.data);
+//       $q.notify({
+//         message: '수집이 완료되었습니다.',
+//         color: 'positive',
+//         icon: 'cloud_done',
+//       });
 
-      initPage();
-    });
-};
+//       initPage();
+//     });
+// };
 
 const fetch = async () => {
   console.log('fetch');

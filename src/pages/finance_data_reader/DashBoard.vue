@@ -19,24 +19,15 @@
         >
           <template v-slot:top>
             <div class="q-pa-md row full-width">
-              <div class="col row items-center q-mr-md">
-                <q-select
+              <div class="col-4">
+                <q-input
                   dense
-                  v-model="selectedKrxDailyTradeDataCollectId"
-                  :options="savedKrxDailyTradeDataCollectIdList"
-                  label="collectId"
-                  style="width: 300px"
+                  debounce="300"
+                  color="primary"
+                  label="jobId"
+                  v-model.lazy="searchJobId"
                 >
-                  <template v-slot:append>
-                    <q-icon
-                      name="close"
-                      @click.stop.prevent="
-                        selectedKrxDailyTradeDataCollectId = ''
-                      "
-                      class="cursor-pointer"
-                    />
-                  </template>
-                </q-select>
+                </q-input>
               </div>
               <div class="col row items-center">
                 <q-input
@@ -67,8 +58,8 @@
               </div>
               <div class="col row items-center">
                 <q-input
+                  ref="qInputRef"
                   dense
-                  debounce="300"
                   color="primary"
                   v-model.lazy="searchKeyword"
                 >
@@ -88,24 +79,24 @@
                   dense
                   debounce="300"
                   color="primary"
-                  v-model.lazy="macd_short_n"
-                  label="macd_short_n"
+                  v-model.lazy="macdShortN"
+                  label="macdShortN"
                 >
                 </q-input>
                 <q-input
                   dense
                   debounce="300"
                   color="primary"
-                  v-model.lazy="macd_long_n"
-                  label="macd_long_n"
+                  v-model.lazy="macdLongN"
+                  label="macdNongN"
                 >
                 </q-input>
                 <q-input
                   dense
                   debounce="300"
                   color="primary"
-                  v-model.lazy="macd_signal_n"
-                  label="macd_signal_n"
+                  v-model.lazy="macdSignalN"
+                  label="macdSignalN"
                 >
                 </q-input>
               </div>
@@ -120,13 +111,6 @@
 
 <script setup>
 const columns = [
-  {
-    name: 'collectId',
-    required: true,
-    label: 'collectId',
-    align: 'left',
-    field: row => row.collectId,
-  },
   {
     name: 'code',
     required: true,
@@ -283,37 +267,24 @@ import { useQuasar } from 'quasar';
 const $q = useQuasar();
 
 const tableRef = ref();
+const qInputRef = ref();
+
 const rows = ref([]);
 
 const max_draw_down = ref(0);
 
-// const filter = ref('');
+const searchJobId = ref(null);
 const searchKeyword = ref(null);
 const loading = ref(false);
-// const pagination = ref({
-//   sortBy: 'desc',
-//   descending: false,
-//   page: 1,
-//   rowsPerPage: 10,
-//   rowsNumber: null,
-// });
 
-// const savedKrxCollectIdList = ref([]);
-// const selectedKrxCollectId = ref(null);
-
-const savedKrxDailyTradeDataCollectIdList = ref([]);
-const selectedKrxDailyTradeDataCollectId = ref(null);
-
-// const collectIdToDelete = ref(null);
-
-const startDate = ref('');
-const endDate = ref('');
+const startDate = ref(null);
+const endDate = ref(null);
 const dateRangeDisplay = ref('');
 const showCalendar = ref(false);
 
-const macd_short_n = ref(12);
-const macd_long_n = ref(26);
-const macd_signal_n = ref(9);
+const macdShortN = ref(12);
+const macdLongN = ref(26);
+const macdSignalN = ref(9);
 
 watch([startDate, endDate], () => {
   if (startDate.value && endDate.value) {
@@ -329,19 +300,13 @@ async function onRequest(props) {
 
   //1. 서버로부터 데이터를 가져온자.
   const params = {
-    // page,
-    // limit: rowsPerPage,
-    // allRows: rowsPerPage === 0 ? true : false,
-    collect_id: selectedKrxDailyTradeDataCollectId.value,
-    start_date: startDate.value,
-    end_date: endDate.value,
-    search_keyword: searchKeyword.value,
-    macd_short_n: macd_short_n.value,
-    macd_long_n: macd_long_n.value,
-    macd_signal_n: macd_signal_n.value,
-    // sortBy,
-    // descending,
-    // filter,
+    searchJobId: searchJobId.value,
+    startDate: startDate.value,
+    endDate: endDate.value,
+    searchKeyword: searchKeyword.value,
+    macdShortN: macdShortN.value,
+    macdLongN: macdLongN.value,
+    macdSignalN: macdSignalN.value,
   };
 
   const response = await api.get('/finance-data-reader/dashboard', {
@@ -350,46 +315,25 @@ async function onRequest(props) {
 
   console.log(response.data);
 
-  // pagination.value.rowsNumber = response.data.size();
-
   // // clear out existing data and add new
   rows.value.splice(0, rows.value.length, ...response.data.dataList);
   max_draw_down.value = response.data.maxDrawDown;
-
-  // // don't forget to update local pagination object
-  // pagination.value.page = page;
-  // pagination.value.rowsPerPage = rowsPerPage;
-  // pagination.value.sortBy = sortBy;
-  // pagination.value.descending = descending;
-
   // ...and turn of loading indicator
   loading.value = false;
 }
-
-const getKrxItmesDailyTradeDataCollectIds = async () => {
-  const apiResult = await api
-    .get('/finance-data-reader/krx-items/daily-trade-data/collect-ids')
-    .then(response => {
-      console.log(response.data);
-      return response.data;
-    });
-  return apiResult;
-};
 
 const fetch = async () => {
   console.log('fetch');
   tableRef.value.requestServerInteraction();
 };
 
-const initPage = async () => {
-  console.log('initPage');
-  savedKrxDailyTradeDataCollectIdList.value =
-    await getKrxItmesDailyTradeDataCollectIds();
-};
-
 onMounted(() => {
   console.log('onMounted');
-  initPage();
+  const el = qInputRef.value.getNativeElement();
+  el.addEventListener('input', e => {
+    console.log('input', e.target.value);
+    searchKeyword.value = e.target.value;
+  });
 });
 </script>
 

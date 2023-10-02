@@ -19,69 +19,15 @@
         >
           <template v-slot:top>
             <div class="q-pa-md row full-width">
-              <div class="col row items-center">
-                <q-select
+              <div class="col-3">
+                <q-input
                   dense
-                  v-model="selectedKrxCollectId"
-                  :options="savedKrxCollectIdList"
-                  label="KrxCollectId"
-                  style="width: 300px"
-                  class="q-mr-md"
-                >
-                  <template v-slot:append>
-                    <q-icon
-                      name="close"
-                      @click.stop.prevent="selectedKrxCollectId = ''"
-                      class="cursor-pointer"
-                    />
-                  </template>
-                </q-select>
-                <q-btn
+                  debounce="300"
                   color="primary"
-                  :disable="loading"
-                  label="수집하기"
-                  @click="collectKrxDailyTradeData"
-                />
-              </div>
-            </div>
-
-            <div class="q-pa-md row full-width">
-              <div class="col row items-center q-mr-md">
-                <q-select
-                  dense
-                  v-model="selectedKrxDailyTradeDataCollectId"
-                  :options="savedKrxDailyTradeDataCollectIdList"
-                  :option-label="
-                    item =>
-                      item.collectId +
-                      '(' +
-                      item.numberOfSuccess +
-                      '/' +
-                      item.numberOfTargets +
-                      ')'
-                  "
-                  label="collectId"
-                  style="width: 300px"
+                  label="jobId"
+                  v-model.lazy="searchJobId"
                 >
-                  <template v-slot:append>
-                    <q-icon
-                      name="close"
-                      @click.stop.prevent="
-                        selectedKrxDailyTradeDataCollectId = ''
-                      "
-                      class="cursor-pointer"
-                    />
-                  </template>
-                  <template v-slot:after>
-                    <q-btn
-                      v-if="selectedKrxDailyTradeDataCollectId"
-                      color="negative"
-                      :disable="loading"
-                      label="삭제하기"
-                      @click="deleteData"
-                    />
-                  </template>
-                </q-select>
+                </q-input>
               </div>
               <div class="col row items-center">
                 <q-input
@@ -112,10 +58,10 @@
               </div>
               <div class="col row items-center">
                 <q-input
+                  ref="qInputRef"
                   dense
-                  debounce="300"
                   color="primary"
-                  v-model.lazy="searchKeyword"
+                  :model-value="searchKeyword"
                 >
                 </q-input>
                 <q-btn
@@ -126,35 +72,6 @@
                 />
               </div>
             </div>
-
-            <!-- <div class="q-pa-md row full-width">
-              <div class="col row items-center">
-                <q-input
-                  dense
-                  debounce="300"
-                  color="primary"
-                  v-model.lazy="short_n"
-                  label="short_n"
-                >
-                </q-input>
-                <q-input
-                  dense
-                  debounce="300"
-                  color="primary"
-                  v-model.lazy="long_n"
-                  label="long_n"
-                >
-                </q-input>
-                <q-input
-                  dense
-                  debounce="300"
-                  color="primary"
-                  v-model.lazy="signal_n"
-                  label="signal_n"
-                >
-                </q-input>
-              </div>
-            </div> -->
           </template>
         </q-table>
       </div>
@@ -164,13 +81,6 @@
 
 <script setup>
 const columns = [
-  {
-    name: 'collectId',
-    required: true,
-    label: 'collectId',
-    align: 'left',
-    field: row => row.collectId,
-  },
   {
     name: 'code',
     required: true,
@@ -248,48 +158,6 @@ const columns = [
     align: 'left',
     field: row => row.change,
   },
-  // {
-  //   name: 'short',
-  //   required: true,
-  //   label: 'short',
-  //   align: 'left',
-  //   field: row => row.short,
-  // },
-  // {
-  //   name: 'long',
-  //   required: true,
-  //   label: 'long',
-  //   align: 'left',
-  //   field: row => row.long,
-  // },
-  // {
-  //   name: 'macd',
-  //   required: true,
-  //   label: 'macd',
-  //   align: 'left',
-  //   field: row => row.macd,
-  // },
-  // {
-  //   name: 'signal',
-  //   required: true,
-  //   label: 'signal',
-  //   align: 'left',
-  //   field: row => row.signal,
-  // },
-  // {
-  //   name: 'macdOscillator',
-  //   required: true,
-  //   label: 'macdOscillator',
-  //   align: 'left',
-  //   field: row => row.macdOscillator,
-  // },
-  {
-    name: 'collectingDate',
-    required: false,
-    label: 'collectingDate',
-    align: 'left',
-    field: row => row.collectingDate,
-  },
 ];
 
 import { ref, onMounted, watch } from 'vue';
@@ -299,8 +167,12 @@ import { useQuasar } from 'quasar';
 const $q = useQuasar();
 
 const tableRef = ref();
+const qInputRef = ref();
+
 const rows = ref([]);
 // const filter = ref('');
+
+const searchJobId = ref(null);
 const searchKeyword = ref(null);
 const loading = ref(false);
 const pagination = ref({
@@ -311,22 +183,18 @@ const pagination = ref({
   rowsNumber: null,
 });
 
-const savedKrxCollectIdList = ref([]);
-const selectedKrxCollectId = ref(null);
+// const savedKrxCollectIdList = ref([]);
+// const selectedKrxCollectId = ref(null);
 
-const savedKrxDailyTradeDataCollectIdList = ref([]);
-const selectedKrxDailyTradeDataCollectId = ref(null);
+// const savedKrxDailyTradeDataCollectIdList = ref([]);
+// const selectedKrxDailyTradeDataCollectId = ref(null);
 
-const collectIdToDelete = ref(null);
+// const collectIdToDelete = ref(null);
 
-const startDate = ref('');
-const endDate = ref('');
+const startDate = ref(null);
+const endDate = ref(null);
 const dateRangeDisplay = ref('');
 const showCalendar = ref(false);
-
-const short_n = ref(12);
-const long_n = ref(26);
-const signal_n = ref(9);
 
 watch([startDate, endDate], () => {
   if (startDate.value && endDate.value) {
@@ -345,16 +213,10 @@ async function onRequest(props) {
     page,
     limit: rowsPerPage,
     allRows: rowsPerPage === 0 ? true : false,
-    collect_id: selectedKrxDailyTradeDataCollectId.value.collectId,
-    start_date: startDate.value,
-    end_date: endDate.value,
-    search_keyword: searchKeyword.value,
-    // short_n: short_n.value,
-    // long_n: long_n.value,
-    // signal_n: signal_n.value,
-    // sortBy,
-    // descending,
-    // filter,
+    startDate: startDate.value,
+    endDate: endDate.value,
+    searchJobId: searchJobId.value,
+    searchKeyword: searchKeyword.value,
   };
 
   const response = await api.get(
@@ -379,84 +241,18 @@ async function onRequest(props) {
   loading.value = false;
 }
 
-const collectKrxDailyTradeData = async () => {
-  console.log('collectKrxDailyTradeData');
-
-  const param = {
-    collectId: selectedKrxCollectId.value,
-  };
-
-  const apiResult = await api
-    .post('/finance-data-reader/krx-itmes/daily-trade-data/_collect', param)
-    .then(response => {
-      console.log(response.data);
-      $q.notify({
-        message: '수집이 진행중입니다.(대략 16분 소요)',
-        color: 'positive',
-        icon: 'cloud_done',
-      });
-    })
-    .catch(error => {
-      console.log(error);
-      $q.notify({
-        message: '수집이 실패하였습니다.' + error.message,
-        color: 'negative',
-        icon: 'cloud_done',
-      });
-    });
-};
-
-const getKrxItmesCollectIds = async () => {
-  const apiResult = await api
-    .get('/finance-data-reader/krx-items/collect-ids')
-    .then(response => {
-      console.log(response.data);
-      return response.data;
-    });
-
-  return apiResult;
-};
-
-const getKrxItmesDailyTradeDataCollectIds = async () => {
-  const apiResult = await api
-    .get('/finance-data-reader/krx-items/daily-trade-data/collect-ids')
-    .then(response => {
-      console.log(response.data);
-      return response.data;
-    });
-  return apiResult;
-};
-
 const fetch = async () => {
   console.log('fetch');
   tableRef.value.requestServerInteraction();
 };
 
-const initPage = async () => {
-  console.log('initPage');
-  // tableRef.value.requestServerInteraction();
-  savedKrxCollectIdList.value = await getKrxItmesCollectIds();
-  savedKrxDailyTradeDataCollectIdList.value =
-    await getKrxItmesDailyTradeDataCollectIds();
-};
-
-const deleteData = async () => {
-  console.log('deleteData');
-  const params = {
-    collect_id: collectIdToDelete.value,
-  };
-  const response = await api.delete(
-    '/finance-data-reader/krx-items/daily-trade-data',
-    {
-      params,
-    },
-  );
-  initPage();
-};
-
 onMounted(() => {
   console.log('onMounted');
-  initPage();
+  const el = qInputRef.value.getNativeElement();
+  el.addEventListener('input', e => {
+    console.log('input', e.target.value);
+    searchKeyword.value = e.target.value;
+  });
 });
 </script>
 
