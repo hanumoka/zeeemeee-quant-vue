@@ -83,6 +83,12 @@ const linksList = [
         to: '/finance-data-reader/dashboard',
       },
       {
+        title: 'Job관리',
+        caption: 'Job을 관리한다.',
+        icon: 'email',
+        to: '/finance-data-reader/job',
+      },
+      {
         title: 'KRX Items',
         caption: 'KRX 주식종목 수집기',
         icon: 'email',

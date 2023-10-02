@@ -31,6 +31,10 @@ const routes = [
         component: () => import('src/pages/finance_data_reader/DashBoard.vue'),
       },
       {
+        path: 'job',
+        component: () => import('src/pages/finance_data_reader/Job.vue'),
+      },
+      {
         path: 'krx-items',
         component: () => import('src/pages/finance_data_reader/KrxItems.vue'),
       },

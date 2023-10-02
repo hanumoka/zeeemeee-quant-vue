@@ -18,7 +18,7 @@
           @request="onRequest"
         >
           <template v-slot:top>
-            <q-btn
+            <!-- <q-btn
               color="primary"
               :disable="loading"
               label="수집하기"
@@ -41,7 +41,7 @@
                   @click="deleteData"
                 />
               </template>
-            </q-input>
+            </q-input> -->
             <q-space />
             <div class="row q-gutter-xs col-xs-6">
               <div class="col" style="width: 200px">
@@ -293,7 +293,7 @@ const collectKrxStockItems = async () => {
   console.log('collectKrxStockItems');
 
   const apiResult = await api
-    .post('/finance-data-reader/krx-itmes/_collect')
+    .post('/task/fdr/start-collecting/FDR_COLLECT_KRX_ITEMS')
     .then(response => {
       console.log(response.data);
       $q.notify({
@@ -328,16 +328,16 @@ const initPage = async () => {
   savedCollectIdList.value = await getCollectIds();
 };
 
-const deleteData = async () => {
-  console.log('deleteData');
-  const params = {
-    collect_id: collectIdToDelete.value,
-  };
-  const response = await api.delete('/finance-data-reader/krx-items', {
-    params,
-  });
-  initPage();
-};
+// const deleteData = async () => {
+//   console.log('deleteData');
+//   const params = {
+//     collect_id: collectIdToDelete.value,
+//   };
+//   const response = await api.delete('/finance-data-reader/krx-items', {
+//     params,
+//   });
+//   initPage();
+// };
 
 onMounted(() => {
   console.log('onMounted');

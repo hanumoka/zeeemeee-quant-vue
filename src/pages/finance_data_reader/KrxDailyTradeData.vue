@@ -43,26 +43,6 @@
                   @click="collectKrxDailyTradeData"
                 />
               </div>
-              <div class="col row items-center">
-                <q-input
-                  class="q-ml-lg q-mr-md"
-                  dense
-                  debounce="300"
-                  color="primary"
-                  label="삭제할 collectId"
-                  v-model="collectIdToDelete"
-                >
-                  <template v-slot:after>
-                    <q-btn
-                      v-if="rows.length !== 0"
-                      color="negative"
-                      :disable="loading"
-                      label="삭제하기"
-                      @click="deleteData"
-                    />
-                  </template>
-                </q-input>
-              </div>
             </div>
 
             <div class="q-pa-md row full-width">
@@ -71,6 +51,15 @@
                   dense
                   v-model="selectedKrxDailyTradeDataCollectId"
                   :options="savedKrxDailyTradeDataCollectIdList"
+                  :option-label="
+                    item =>
+                      item.collectId +
+                      '(' +
+                      item.numberOfSuccess +
+                      '/' +
+                      item.numberOfTargets +
+                      ')'
+                  "
                   label="collectId"
                   style="width: 300px"
                 >
@@ -81,6 +70,15 @@
                         selectedKrxDailyTradeDataCollectId = ''
                       "
                       class="cursor-pointer"
+                    />
+                  </template>
+                  <template v-slot:after>
+                    <q-btn
+                      v-if="selectedKrxDailyTradeDataCollectId"
+                      color="negative"
+                      :disable="loading"
+                      label="삭제하기"
+                      @click="deleteData"
                     />
                   </template>
                 </q-select>
@@ -347,7 +345,7 @@ async function onRequest(props) {
     page,
     limit: rowsPerPage,
     allRows: rowsPerPage === 0 ? true : false,
-    collect_id: selectedKrxDailyTradeDataCollectId.value,
+    collect_id: selectedKrxDailyTradeDataCollectId.value.collectId,
     start_date: startDate.value,
     end_date: endDate.value,
     search_keyword: searchKeyword.value,
