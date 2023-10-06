@@ -106,6 +106,16 @@
       </div>
       max_draw_down: {{ max_draw_down }}
     </section>
+    <section>
+      <div>
+        <apexchart
+          height="300"
+          type="candlestick"
+          :options="chartOptions"
+          :series="seriesData"
+        ></apexchart>
+      </div>
+    </section>
   </q-page>
 </template>
 
@@ -252,17 +262,37 @@ const columns = [
     field: row => row.drawDown,
   },
   {
-    name: 'collectingDate',
-    required: false,
-    label: 'collectingDate',
+    name: 'rsi',
+    required: true,
+    label: 'rsi',
     align: 'left',
-    field: row => row.collectingDate,
+    field: row => row.rsi,
   },
 ];
 
 import { ref, onMounted, watch } from 'vue';
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
+
+const chartOptions = ref({
+  chart: {
+    type: 'candlestick',
+    height: 150,
+    width: '80%',
+  },
+  title: {
+    text: 'Stock Price',
+    align: 'left',
+  },
+  xaxis: {
+    type: 'datetime',
+  },
+  yaxis: {
+    tooltip: {
+      enabled: true,
+    },
+  },
+});
 
 const $q = useQuasar();
 
@@ -277,14 +307,33 @@ const searchJobId = ref(null);
 const searchKeyword = ref(null);
 const loading = ref(false);
 
-const startDate = ref(null);
-const endDate = ref(null);
-const dateRangeDisplay = ref('');
+const currentDate = new Date();
+const fiveYearsAgo = new Date(currentDate);
+
+fiveYearsAgo.setFullYear(currentDate.getFullYear() - 1);
+
+const formatDate = date => {
+  let month = '' + (date.getMonth() + 1);
+  let day = '' + date.getDate();
+  let year = date.getFullYear();
+
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+
+  return [year, month, day].join('-');
+};
+
+const startDate = ref(formatDate(fiveYearsAgo));
+const endDate = ref(formatDate(currentDate));
+
+const dateRangeDisplay = ref(`${startDate.value} - ${endDate.value}`);
 const showCalendar = ref(false);
 
 const macdShortN = ref(12);
 const macdLongN = ref(26);
 const macdSignalN = ref(9);
+
+const seriesData = ref([]);
 
 watch([startDate, endDate], () => {
   if (startDate.value && endDate.value) {
@@ -309,21 +358,72 @@ async function onRequest(props) {
     macdSignalN: macdSignalN.value,
   };
 
-  const response = await api.get('/finance-data-reader/dashboard', {
-    params,
-  });
+  try {
+    const response = await api.get('/finance-data-reader/dashboard', {
+      params,
+    });
 
-  console.log(response.data);
+    console.log(JSON.stringify(response.data.dataList));
 
-  // // clear out existing data and add new
-  rows.value.splice(0, rows.value.length, ...response.data.dataList);
-  max_draw_down.value = response.data.maxDrawDown;
-  // ...and turn of loading indicator
-  loading.value = false;
-}
+    rows.value.splice(0, rows.value.length, ...response.data.dataList);
+    max_draw_down.value = response.data.maxDrawDown;
+
+    const candlestickData = {
+      name: 'candlestick',
+      type: 'candlestick',
+      data: [],
+    };
+
+    // const macdData = {
+    //   name: 'macd',
+    //   type: 'line',
+    //   data: [],
+    // };
+
+    // const signalData = {
+    //   name: 'signal',
+    //   type: 'line',
+    //   data: [],
+    // };
+
+    // const oscillatorData = {
+    //   name: 'oscillator',
+    //   type: 'line',
+    //   data: [],
+    // };
+
+    response.data.dataList.forEach(item => {
+      const x = new Date(item.date).getTime();
+      const ohlc = [item.open, item.high, item.low, item.close];
+      candlestickData.data.push({ x, y: ohlc });
+
+      // const macd = item.macd;
+      // macdData.data.push({ x, y: macd });
+
+      // const signal = item.signal;
+      // signalData.data.push({ x, y: signal });
+
+      // const oscillator = item.macdOscillator;
+      // oscillatorData.data.push({ x, y: oscillator });
+    });
+
+    const tempValue = [candlestickData];
+
+    console.log(JSON.stringify(tempValue));
+
+    seriesData.value = tempValue;
+  } catch (error) {
+    console.log(error);
+    $q.notify({
+      color: 'negative',
+      message: '데이터 조회에 실패했습니다.',
+    });
+  } finally {
+    loading.value = false;
+  }
+} //
 
 const fetch = async () => {
-  console.log('fetch');
   tableRef.value.requestServerInteraction();
 };
 
