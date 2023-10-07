@@ -120,9 +120,9 @@
       <div>
         <apexchart
           height="300"
-          type="area"
-          :options="drawDownChartOptions"
-          :series="drawDownSeriesData"
+          type="bar"
+          :options="volumeChartOptions"
+          :series="volumeSeriesData"
         ></apexchart>
       </div>
     </section>
@@ -583,7 +583,38 @@ const rsiChartOptions = ref({
     ],
   },
 });
-const volumeChartOptions = ref({});
+const volumeChartOptions = ref({
+  chart: {
+    height: 350,
+    type: 'bar',
+    toolbar: {
+      show: false,
+    },
+  },
+  title: {
+    text: 'Volume',
+    align: 'left',
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: '70%', // 막대 너비 조정
+    },
+  },
+  xaxis: {
+    type: 'datetime',
+  },
+  yaxis: {
+    labels: {
+      formatter: function (val) {
+        return val.toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+      },
+    },
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  colors: ['#FFA0E5'], // 핑크색 막대
+});
 
 const $q = useQuasar();
 
@@ -697,6 +728,11 @@ async function onRequest(props) {
       data: [],
     };
 
+    const volumeData = {
+      name: 'Volume',
+      data: [],
+    };
+
     response.data.dataList.forEach(item => {
       const x = new Date(item.date).getTime();
       const ohlc = [item.open, item.high, item.low, item.close];
@@ -715,6 +751,9 @@ async function onRequest(props) {
 
       const rsi = item.rsi;
       rsiData.data.push({ x, y: rsi });
+
+      const volume = item.volume;
+      volumeData.data.push({ x, y: volume });
     });
 
     stockPriceSeriesData.value = [candlestickData];
@@ -722,6 +761,7 @@ async function onRequest(props) {
     macdSeriesData.value = [macdData, signalData, oscillatorData];
     console.log(JSON.stringify(rsiData));
     rsiSeriesData.value = [rsiData];
+    volumeSeriesData.value = [volumeData];
   } catch (error) {
     console.log(error);
     $q.notify({
