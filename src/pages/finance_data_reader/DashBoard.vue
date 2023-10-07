@@ -111,8 +111,28 @@
         <apexchart
           height="300"
           type="candlestick"
-          :options="chartOptions"
-          :series="seriesData"
+          :options="stockPriceChartOptions"
+          :series="stockPriceSeriesData"
+        ></apexchart>
+      </div>
+    </section>
+    <section>
+      <div>
+        <apexchart
+          height="300"
+          type="area"
+          :options="drawDownChartOptions"
+          :series="drawDownSeriesData"
+        ></apexchart>
+      </div>
+    </section>
+    <section>
+      <div>
+        <apexchart
+          height="300"
+          type="line"
+          :options="macdChartOptions"
+          :series="macdSeriesData"
         ></apexchart>
       </div>
     </section>
@@ -274,7 +294,7 @@ import { ref, onMounted, watch } from 'vue';
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
 
-const chartOptions = ref({
+const stockPriceChartOptions = ref({
   chart: {
     type: 'candlestick',
     height: 150,
@@ -292,6 +312,114 @@ const chartOptions = ref({
       enabled: true,
     },
   },
+  tooltip: {
+    x: {
+      format: 'dd/MM/yy',
+    },
+  },
+});
+
+const drawDownChartOptions = ref({
+  chart: {
+    type: 'area',
+    height: 350,
+  },
+  title: {
+    text: 'Draw Down',
+    align: 'left',
+  },
+  subtitle: {
+    text: '최고점 대비 감소울, Droawdown = ((최고점가격 - 현재가격) / 최고점가격) * 100',
+    align: 'left',
+    offsetY: 40,
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  stroke: {
+    curve: 'smooth',
+  },
+  xaxis: {
+    type: 'datetime',
+  },
+  yaxis: {
+    labels: {
+      formatter: function (val) {
+        return val.toFixed(2); // 소수점 두 번째 자리까지 표시
+      },
+    },
+    tooltip: {
+      enabled: true,
+    },
+  },
+  tooltip: {
+    x: {
+      format: 'dd/MM/yy',
+    },
+  },
+  stroke: {
+    curve: 'smooth',
+    width: 1, // 선 두께 설정
+    colors: ['#FF0000'], // 붉은색 설정
+  },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      shadeIntensity: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#FF7F7F', // 상단의 흐린 붉은색 설정
+        },
+        {
+          offset: 100,
+          color: '#FF0000', // 하단의 진한 붉은색 설정
+        },
+      ],
+      opacityFrom: 0.7,
+      opacityTo: 0.9,
+      stops: [0, 100],
+    },
+  },
+});
+
+const macdChartOptions = ref({
+  chart: {
+    type: 'line',
+    height: 350,
+  },
+  title: {
+    text: 'MACD',
+    align: 'left',
+  },
+  xaxis: {
+    type: 'datetime',
+  },
+  yaxis: {
+    labels: {
+      formatter: function (val) {
+        return parseInt(val); // 정수로 변환하여 반환
+      },
+    },
+    tooltip: {
+      enabled: true,
+    },
+  },
+  stroke: {
+    curve: 'smooth',
+    colors: ['#008FFB', '#00E396', '#FEB019'], // MACD, 시그널, 오실레이터에 대한 색상
+    width: [2, 2, 1], // 선의 두께 설정
+  },
+  tooltip: {
+    x: {
+      format: 'dd/MM/yy',
+    },
+  },
+  legend: {
+    show: true,
+    position: 'top',
+    horizontalAlign: 'right',
+  },
 });
 
 const $q = useQuasar();
@@ -304,7 +432,7 @@ const rows = ref([]);
 const max_draw_down = ref(0);
 
 const searchJobId = ref(null);
-const searchKeyword = ref(null);
+const searchKeyword = ref('삼성전자');
 const loading = ref(false);
 
 const currentDate = new Date();
@@ -333,7 +461,9 @@ const macdShortN = ref(12);
 const macdLongN = ref(26);
 const macdSignalN = ref(9);
 
-const seriesData = ref([]);
+const stockPriceSeriesData = ref([]);
+const drawDownSeriesData = ref([]);
+const macdSeriesData = ref([]);
 
 watch([startDate, endDate], () => {
   if (startDate.value && endDate.value) {
@@ -370,48 +500,52 @@ async function onRequest(props) {
 
     const candlestickData = {
       name: 'candlestick',
-      type: 'candlestick',
       data: [],
     };
 
-    // const macdData = {
-    //   name: 'macd',
-    //   type: 'line',
-    //   data: [],
-    // };
+    const drawDownData = {
+      name: 'Draw Down',
+      data: [],
+    };
 
-    // const signalData = {
-    //   name: 'signal',
-    //   type: 'line',
-    //   data: [],
-    // };
+    const macdData = {
+      name: 'MACD',
+      type: 'line',
+      data: [],
+    };
 
-    // const oscillatorData = {
-    //   name: 'oscillator',
-    //   type: 'line',
-    //   data: [],
-    // };
+    const signalData = {
+      name: 'Signal',
+      type: 'line',
+      data: [],
+    };
+
+    const oscillatorData = {
+      name: 'Oscillator',
+      type: 'column',
+      data: [],
+    };
 
     response.data.dataList.forEach(item => {
       const x = new Date(item.date).getTime();
       const ohlc = [item.open, item.high, item.low, item.close];
       candlestickData.data.push({ x, y: ohlc });
 
-      // const macd = item.macd;
-      // macdData.data.push({ x, y: macd });
+      drawDownData.data.push({ x, y: item.drawDown });
 
-      // const signal = item.signal;
-      // signalData.data.push({ x, y: signal });
+      const macd = item.macd;
+      macdData.data.push({ x, y: macd });
 
-      // const oscillator = item.macdOscillator;
-      // oscillatorData.data.push({ x, y: oscillator });
+      const signal = item.signal;
+      signalData.data.push({ x, y: signal });
+
+      const oscillator = item.macdOscillator;
+      oscillatorData.data.push({ x, y: oscillator });
     });
 
-    const tempValue = [candlestickData];
-
-    console.log(JSON.stringify(tempValue));
-
-    seriesData.value = tempValue;
+    stockPriceSeriesData.value = [candlestickData];
+    drawDownSeriesData.value = [drawDownData];
+    macdSeriesData.value = [macdData, signalData, oscillatorData];
   } catch (error) {
     console.log(error);
     $q.notify({
