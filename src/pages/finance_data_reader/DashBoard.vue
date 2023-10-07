@@ -134,6 +134,80 @@
           :options="macdChartOptions"
           :series="macdSeriesData"
         ></apexchart>
+        <!-- <div>
+          <q-page padding>
+            <q-list bordered separator>
+              <q-item>
+                <q-item-section>
+                  macdShortN(12) - macdLongN(26), Signal: macdSignalN(9),
+                  Oscillator: MACD - Signal
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  비추세적일때, 하락추세일때 적합하지 않은 보조지표 상승추세에
+                  매수를 하고 상승 추세가 꺼지는 시점에 매도를 하는데 적합한
+                  보조지표
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  골든크로스: MACD 선이 시그널 선을 상향돌파할 때 발생하며, 이는
+                  종목 가격의 상승세를 예상하는 긍정적인 신호로 해석될 수
+                  있습니다.
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  데드크로스: MACD 선이 시그널 선을 하향돌파할 때 발생하며, 이는
+                  종목 가격의 하락세를 예상하는 부정적인 신호로 해석될 수
+                  있습니다.
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  오실레이터의: 절대값이 커지다가 작아지는 지점에서 매수/매도
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  오실레이터의: 반점이 되는 지점에서 매수/매도 (단기 매매방식,
+                  종합적 판단 필요)
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <div>사는시점: MACD 선이 0선을 상향 돌파할때(상승국면)</div>
+                  <div>사는시점: MACD 선이 SIGNAL 선을 상향 돌파할때</div>
+                  <div>파는시점: MACD 선이 0선을 하향 돌파할때(하강국면)</div>
+                  <div>파는시점: MACD 선이SIGNAL 선을 하향 돌파할때</div>
+                  <div>
+                    상승국면에서 MACD 선이 SIGNAL 선을 상향 돌파 하는 경우 가격
+                    조정일 가능성이 있다.(거짓신호 일수도 있다.)
+                  </div>
+                  <div>
+                    추천: 상승국면이면서 MACD선이 SIGNAL선을 상향돌파하는 경우
+                    매수
+                  </div>
+                  <div>
+                    추천: 주간차트, 일간차트 모두 MACD선이 SIGNAL선을
+                    상향돌파하는 경우 매수(보수적 전략)
+                  </div>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-page>
+        </div> -->
+      </div>
+    </section>
+    <section>
+      <div>
+        <apexchart
+          height="300"
+          type="line"
+          :options="rsiChartOptions"
+          :series="rsiSeriesData"
+        ></apexchart>
       </div>
     </section>
   </q-page>
@@ -389,8 +463,13 @@ const macdChartOptions = ref({
     height: 350,
   },
   title: {
-    text: 'MACD',
+    text: 'MACD: 이동편균선의 수렴과 확산을 이용한 보조지표',
     align: 'left',
+  },
+  subtitle: {
+    text: '장단기 이동편균을 활용하여 추가의 추세를 나타내주는 기술적 지표. 추세분석 선행 후 사용이 더 효과적',
+    align: 'left',
+    offsetY: 40,
   },
   xaxis: {
     type: 'datetime',
@@ -421,6 +500,90 @@ const macdChartOptions = ref({
     horizontalAlign: 'right',
   },
 });
+
+const rsiChartOptions = ref({
+  chart: {
+    id: 'rsi',
+    height: 350,
+    type: 'line',
+    toolbar: {
+      show: false,
+    },
+  },
+  title: {
+    text: 'RSI',
+    align: 'left',
+  },
+  // subtitle: {
+  //   text: '장단기 이동편균을 활용하여 추가의 추세를 나타내주는 기술적 지표. 추세분석 선행 후 사용이 더 효과적',
+  //   align: 'left',
+  //   offsetY: 40,
+  // },
+  xaxis: {
+    type: 'datetime',
+  },
+  yaxis: {
+    min: 0,
+    max: 100,
+    tickAmount: 10,
+    labels: {
+      formatter: function (val) {
+        return val.toFixed(0);
+      },
+    },
+  },
+  grid: {
+    yaxis: {
+      lines: {
+        show: true,
+      },
+    },
+  },
+  stroke: {
+    width: 2,
+    colors: ['#4287f5'], // 그래프 선 색상
+  },
+  markers: {
+    size: 0,
+  },
+  tooltip: {
+    shared: true,
+    y: {
+      formatter: function (val) {
+        return val.toFixed(2);
+      },
+    },
+  },
+  annotations: {
+    yaxis: [
+      {
+        y: 30,
+        borderColor: '#FF0000',
+        label: {
+          borderColor: '#FF0000',
+          style: {
+            color: '#FFF',
+            background: '#FF0000',
+          },
+          text: '30',
+        },
+      },
+      {
+        y: 70,
+        borderColor: '#00FF00',
+        label: {
+          borderColor: '#00FF00',
+          style: {
+            color: '#FFF',
+            background: '#00FF00',
+          },
+          text: '70',
+        },
+      },
+    ],
+  },
+});
+const volumeChartOptions = ref({});
 
 const $q = useQuasar();
 
@@ -464,6 +627,8 @@ const macdSignalN = ref(9);
 const stockPriceSeriesData = ref([]);
 const drawDownSeriesData = ref([]);
 const macdSeriesData = ref([]);
+const rsiSeriesData = ref([]);
+const volumeSeriesData = ref([]);
 
 watch([startDate, endDate], () => {
   if (startDate.value && endDate.value) {
@@ -526,6 +691,12 @@ async function onRequest(props) {
       data: [],
     };
 
+    const rsiData = {
+      name: 'rsi',
+      type: 'line',
+      data: [],
+    };
+
     response.data.dataList.forEach(item => {
       const x = new Date(item.date).getTime();
       const ohlc = [item.open, item.high, item.low, item.close];
@@ -541,11 +712,16 @@ async function onRequest(props) {
 
       const oscillator = item.macdOscillator;
       oscillatorData.data.push({ x, y: oscillator });
+
+      const rsi = item.rsi;
+      rsiData.data.push({ x, y: rsi });
     });
 
     stockPriceSeriesData.value = [candlestickData];
     drawDownSeriesData.value = [drawDownData];
     macdSeriesData.value = [macdData, signalData, oscillatorData];
+    console.log(JSON.stringify(rsiData));
+    rsiSeriesData.value = [rsiData];
   } catch (error) {
     console.log(error);
     $q.notify({
