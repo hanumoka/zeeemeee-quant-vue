@@ -4,10 +4,8 @@ import router from 'src/router';
 
 import axios from 'axios';
 
-const testMode = false;
-
 const api = axios.create({
-  baseURL: testMode ? 'http://localhost:8000' : 'http://localhost:8000',
+  baseURL: process.env.dev.API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
