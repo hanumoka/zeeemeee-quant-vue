@@ -10,6 +10,11 @@
 
 const { configure } = require('quasar/wrappers');
 
+// 프로파일별로 .env 파일을 읽어온다.
+const DotEnv = require('dotenv').config({
+  path: `.env.${process.env.PROFILE}`,
+});
+
 module.exports = configure(function (/* ctx */) {
   return {
     eslint: {
@@ -55,14 +60,18 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
-      env: {
-        local: {
-          API_URL: 'http://localhost:8000',
-        },
-        dev: {
-          API_URL: 'http://43.202.154.246:28000/',
-        },
-      },
+      env: Object.keys(DotEnv.parsed).reduce((env, key) => {
+        env[key] = JSON.stringify(DotEnv.parsed[key]);
+        return env;
+      }, {}),
+      // env: {
+      //   local: {
+      //     API_URL: 'http://localhost:8000',
+      //   },
+      //   dev: {
+      //     API_URL: 'http://43.202.154.246:28000',
+      //   },
+      // },
       target: {
         browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
         node: 'node16',

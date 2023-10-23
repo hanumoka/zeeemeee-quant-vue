@@ -9,13 +9,15 @@
     "lint": "eslint --ext .js,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
-    "dev": "quasar dev",
-    "build": "quasar build"
+    "dev": "PROFILE=local quasar dev",
+    "build": "PROFILE=dev quasar build"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "apexcharts": "^3.43.0",
     "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "esbuild": "^0.14.54",
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0",
@@ -28,7 +30,8 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-vue": "^9.0.0",
     "postcss": "^8.4.14",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "serve": "^14.2.1"
   },
   "engines": {
     "node": "^18 || ^16 || ^14.19",

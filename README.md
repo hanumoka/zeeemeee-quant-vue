@@ -10,5 +10,5 @@ quasar new boot 파일명
 
 ```
 docker build -t sonjul-vue .
-docker run -p 9000:9000 sonjul-vue
+docker run -p 9000:80 sonjul-vue
 ```
