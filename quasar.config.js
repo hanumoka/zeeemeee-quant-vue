@@ -60,8 +60,13 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
-      env: Object.keys(DotEnv.parsed).reduce((env, key) => {
-        env[key] = JSON.stringify(DotEnv.parsed[key]);
+      env: Object.keys(DotEnv.parsed || {}).reduce((env, key) => {
+        let value = JSON.stringify(DotEnv.parsed[key]);
+        if (value) {
+          // 값이 존재하는 경우에만 처리
+          value = value.replace(/"/g, ''); // replaceAll 대신 기존 replace 사용
+          env[key] = value;
+        }
         return env;
       }, {}),
       // env: {
