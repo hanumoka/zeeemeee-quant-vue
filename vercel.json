@@ -3,5 +3,8 @@
   "routes": [
     {"handle":  "filesystem"},
     {"src":  "/.*", "dest":  "/index.html"}
-  ]
+  ],
+  "env": {
+    "VUE_APP_API_URL": "http://43.202.154.246:28000"
+  }
 }

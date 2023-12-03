@@ -1,6 +1,5 @@
 import { boot } from 'quasar/wrappers';
 import { LocalStorage } from 'quasar';
-import router from 'src/router';
 
 import axios from 'axios';
 
