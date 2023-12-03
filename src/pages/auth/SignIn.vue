@@ -60,7 +60,7 @@ const form = ref({
   password: '',
 });
 
-const apiUrl = process.env.VUE_APP_API_URL || process.env.VITE_API_URL;
+const apiUrl = process.env.VUE_APP_API_URL || process.env.VITE_API_URL ||  import.meta.env.VITE_API_URL;;
 const buildMode = process.env.NODE_ENV;
 
 const onSubmit = async () => {
