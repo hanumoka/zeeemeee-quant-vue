@@ -4,7 +4,7 @@ import { LocalStorage } from 'quasar';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.VUE_APP_API_URL || process.env.VITE_API_URL,
+  baseURL: process.env.VUE_APP_API_URL || process.env.VITE_API_URL || import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
