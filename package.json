@@ -11,7 +11,7 @@
     "test": "echo \"No test specified\" && exit 0",
     "local": "PROFILE=local quasar dev",
     "dev": "quasar dev",
-    "build": "PROFILE=dev quasar build",
+    "build": "quasar build",
     "vercelbuild": "PROFILE=dev quasar build"
   },
   "dependencies": {
