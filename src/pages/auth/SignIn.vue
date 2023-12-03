@@ -3,7 +3,7 @@
     <q-card flat :style="{ minWidth: '400px' }">
       <q-card-section>
         <div class="text-h6 text-weight-bold">로그인하기</div>
-        <div class="text-subtitle2 text-grey">개발중...</div>
+        <div class="text-subtitle2 text-grey">개발중... apiurl: {{apiUrl}} buildMode: {{buildMode}}</div>
       </q-card-section>
       <q-card-section>
         <q-form @submit="onSubmit">
@@ -59,6 +59,9 @@ const form = ref({
   email: '',
   password: '',
 });
+
+const apiUrl = process.env.VUE_APP_API_URL;
+const buildMode = process.env.NODE_ENV;
 
 const onSubmit = async () => {
   console.log('submit');
